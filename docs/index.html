@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE>robin senior >> blinkenlights for processing</TITLE>
+  
+  <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+  
+ </HEAD>
+
+ <BODY>
+ 
+ 	<center><img src="images/grab.png" class="header"/></center>
+ 
+ 	<div class="blinken_content">
+ 	 	<div class="breadcrumbs"><a href="http://robinsenior.com">robin senior</a> >> blinkenlights</div>
+ 	
+ 	<h2>Blinkenlights Library for Processing</h2>
+ 	This <a href="http://processing.org">Processing</a> library is designed to export sketches to the <a href="http://blinkenlights.net">Blinkenlights</a> <a href="http://blinkenlights.net/project/bml">BML file format</a>. If you'd like to convert a load images to BML, please check out Dan Fraser's <a href="http://www.capybara.org/~dfraser/?p=261">converter</a>.<br><br>
+ 	
+ 	<h3>Updates</h3>
+ 	<ul>
+ 	<li>v1.3: added getVersion() to ensure that you're using the latest version :^)</li>
+ 	<li>v1.2: added the showPreview(boolean show) method to BMLWriter. Unless you set this to true, you will not see a pixelated preview of your sketch. This is because enable the preview can cause the bad effects when you export. When you export your sketch, turn off the preview and the grid.</li>
+ 	<li>v1.1: The library has been modified to use <a href="http://www.capybara.org/~dfraser">Dan Fraser</a>'s PacketSender library, which allows you to write network packets to a BlinkenServer. The BML writing class has been renamed from Blinkenlights to BMLWriter.</li>
+ 	<li>The library can now overlay a grid and rectangles representing the windows of the Toronto City Hall by calling bl.showGrid(true). The grid will only appear if running with the native Stereoscope virtual matrix: 96x32.</li>
+ 	</ul>
+ 	
+ 	
+ 	<h3>Installation Instructions</h3>
+ 	<ul>
+ 	<li>Download the library and documentation from <a href="http://github.com/robinsenior/blinkenlights">GitHub</a>.</li>
+	<li>Unzip it and open the blinkenlights_processing folder.</li>
+ 	<li>Move the Blinkenlights folder into your sketchbook folder (usually ~/Documents/Processing on a Mac or My Documents/processing on Windows).</li>
+ 	</ul>
+ 	
+ 	<h3>Usage Instructions</h3>
+ 	<ul>
+	<li>Start Processing.</li>
+ 	<li>From the Sketch menu, choose Import Library -> Blinkenlights.</li>
+ 	<li>In your setup() method, create a new Blinkenlights instance:</li>
+ 	</ul>
+ 	<div class="code">
+ 	int frameDuration = 41; // 24 fps<br><br>
+ 	BMLWriter bl = new BMLWriter(this, frameDuration);<br><br>
+ 	
+ 	<div class="comment">// optionally set the grid dimensions (default is 96x32)</div>
+ 	bl.setCountX(5);<br>
+ 	bl.setCountY(10);<br><br>
+ 	
+ 	<span class="comment">// optionally set your details for the credits</span><br>
+ 	  bl.setAuthor("Robin Senior");<br>
+  	bl.setTitle("My First Sketch");<br>
+  	bl.setEmail("senior@gmail.com");<br>
+  bl.setURL("www.robinsenior.com");<br>
+ 	
+ 	</div>
+ 	
+ 	Doing this will cause your sketch to look pixelated when you run it. If you are happy with how it looks, start writing it to a BML file by putting this in your setup() method:
+ 	
+ 	<div class="code">
+ 	bl.startWriting("circle.bml");
+ 	</div>
+ 	
+ 	If you would like to send your sketch directly to a BlinkenServer, first create a PacketSender and then pass it to the BMLWriter constructor:
+ 	<div class="code">PacketSender mySender = new PacketSender(this,"127.0.0.1",2323);<br>
+ 	BMLWriter bl = new BMLWriter(this, 41, mySender);</div>
+ 	
+ 	<strong>ATTENTION: </strong> When exporting to file or across the network, make sure that the grid and the preview are turned off, or it make cause the image to be exported with visual artifacts.
+ 	
+ 	Here is a sample application, view it in action <a href="circle_applet/index.html">here</a>:
+ 	
+ 	<div class="code">
+ 	import processing.blinkenlights.*;<br><br>
+int x = 0;<br><br>
+
+void setup()<br>
+{<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// instantiate the Blinkenlights library</span><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BMLWriter bl = new BMLWriter(this, 41);<br><br>
+  
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//only use the grid for testing</span><br><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//bl.showGrid(true);</span><br>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bl.setAuthor("Robin Senior");<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bl.setTitle("Crappy Circle");<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bl.setEmail("senior@gmail.com");<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bl.setURL("www.robinsenior.com");<br><br>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// set up your sketch</span><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;size(960, 320);<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frameRate(30);<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;colorMode(RGB,255);<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;smooth();<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;noStroke();<br><br>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// this is where the magic happens</span><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bl.startWriting("circle.bml");<br>
+}<br><br>
+
+<span class="comment">// do your own thing</span><br>
+void draw()<br>
+{<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background(0);<br>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fill(255);<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ellipse(x,height/2,150,150);<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ellipse(width-x,height/2,150,150);<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x += 5;<br><br>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (x>width)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x=0;<br>
+}<br>
+
+ 	
+ 	</div>
+ 	
+ 	<h3>Gallery</h3>
+ 	Several of these examples are adapted from sketches originally made by <a href="http://www.shiffman.net/">Daniel Shiffman</a>.
+ 	
+ 	<ul>
+ 	<li><a href="blinken_cube/index.html">Spinning Cube</a></li>
+ 	<li><a href="2D_equation/index.html">Plot a 2D Equation</a></li>
+ 	<li><a href="blinken_particles/index.html">Basic particle system</a></li>
+ 	<li><a href="blinkenGOL/index.html">Game of Life</a></li>
+ 	</ul>
+ 	
+ 	<h3>Notes</h3>
+ 	<ul>
+ 	<li>This library may not work correctly if used from Eclipse. For some reason when you quit your sketch, the library isn't notified. This may result in malformed BML files, which can be easily fixed by hand.</li>
+ 	<li>To avoid missing regions along the right and bottom borders of your sketch, make your sketch's width and height are a multiple of your x count and y count, respectively.</li>
+ 	<li>This code is licensed under the GPL. Please contact Robin Senior at senior@gmail.com if you would like to contribute any updates.</li>
+ 	</ul>
+ 	
+ 	
+ 	</div>
+  
+  
+  <script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-82681-6");
+pageTracker._trackPageview();
+</script>
+ </BODY>
+</HTML>
